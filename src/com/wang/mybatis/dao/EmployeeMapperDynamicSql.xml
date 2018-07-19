@@ -155,4 +155,71 @@
 		       )
 	 -->
 
+    <!-- 两个内置参数：
+	 	不只是方法传递过来的参数可以被用来判断，取值。。。
+	 	mybatis默认还有两个内置参数：
+	 	_parameter:代表整个参数
+	 		单个参数：_parameter就是这个参数
+	 		多个参数：参数会被封装为一个map；_parameter就是代表这个map
+
+	 	_databaseId:如果配置了databaseIdProvider标签。
+	 		_databaseId就是代表当前数据库的别名oracle
+	  -->
+
+    <!--public List<Employee> getEmpsTestInnerParameter(Employee employee);  -->
+    <!--<select id="getEmpsTestInnerParameter" resultType="com.atguigu.mybatis.bean.Employee">-->
+        <!--&lt;!&ndash; bind：可以将OGNL表达式的值绑定到一个变量中，方便后来引用这个变量的值 &ndash;&gt;-->
+        <!--<bind name="_lastName" value="'%'+lastName+'%'"/>-->
+        <!--<if test="_databaseId=='mysql'">-->
+            <!--select * from tbl_employee-->
+            <!--<if test="_parameter!=null">-->
+                <!--where last_name like #{lastName}-->
+            <!--</if>-->
+        <!--</if>-->
+        <!--<if test="_databaseId=='oracle'">-->
+            <!--select * from employees-->
+            <!--<if test="_parameter!=null">-->
+                <!--where last_name like #{_parameter.lastName}-->
+            <!--</if>-->
+        <!--</if>-->
+    <!--</select>-->
+
+    <!--
+	  	抽取可重用的sql片段。方便后面引用
+	  	1、sql抽取：经常将要查询的列名，或者插入用的列名抽取出来方便引用
+	  	2、include来引用已经抽取的sql：
+	  	3、include还可以自定义一些property，sql标签内部就能使用自定义的属性
+	  			include-property：取值的正确方式${prop},
+	  			#{不能使用这种方式}
+	  -->
+    <!--<sql id="insertColumn">-->
+        <!--<if test="_databaseId=='oracle'">-->
+            <!--employee_id,last_name,email-->
+        <!--</if>-->
+        <!--<if test="_databaseId=='mysql'">-->
+            <!--last_name,email,gender,d_id-->
+        <!--</if>-->
+    <!--</sql>-->
+
+    <!--<insert id="addEmps" databaseId="oracle">-->
+        <!--&lt;!&ndash; oracle第一种批量方式 &ndash;&gt;-->
+        <!--&lt;!&ndash; <foreach collection="emps" item="emp" open="begin" close="end;">-->
+            <!--insert into employees(employee_id,last_name,email) -->
+               <!--values(employees_seq.nextval,#{emp.lastName},#{emp.email});-->
+        <!--</foreach> &ndash;&gt;-->
+
+        <!--&lt;!&ndash; oracle第二种批量方式  &ndash;&gt;-->
+        <!--insert into employees(-->
+        <!--&lt;!&ndash; 引用外部定义的sql &ndash;&gt;-->
+        <!--<include refid="insertColumn">-->
+            <!--<property name="testColomn" value="abc"/>-->
+        <!--</include>-->
+        <!--)-->
+        <!--<foreach collection="emps" item="emp" separator="union"-->
+                 <!--open="select employees_seq.nextval,lastName,email from("-->
+                 <!--close=")">-->
+            <!--select #{emp.lastName} lastName,#{emp.email} email from dual-->
+        <!--</foreach>-->
+    <!--</insert>-->
+
 </mapper>

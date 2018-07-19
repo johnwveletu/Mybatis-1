@@ -1,7 +1,11 @@
 package com.wang.mybatis.beans;
 
 
-public class Employee {
+import java.io.Serializable;
+
+public class Employee implements Serializable {
+
+    private static final long serialVersionUID = -5203201650268795891L;
     private Integer id;
     private String lastName;
     private String email;
