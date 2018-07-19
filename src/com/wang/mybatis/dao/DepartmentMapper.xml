@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wang.mybatis.dao.DepartmentMapper">
+
+    <select id="getDeptById" resultType="Department">
+        select * from  mybatis_department where id = #{id}
+    </select>
+
+    <!--嵌套结果集的方式，使用collection标签定义关联的集合类型的属性封装规则  -->
+    <resultMap id="MyDept_1" type="Department">
+        <id column="did" property="id" ></id>
+        <result column="dept_name" property="deptName"></result>
+        <!--
+			collection定义关联集合类型的属性的封装规则
+			ofType:指定集合里面元素的类型
+		-->
+        <collection property="employeeList" ofType="Employee">
+            <id column="eid" property="id"></id>
+            <result column="last_name" property="lastName"></result>
+            <result column="email" property="email"></result>
+        </collection>
+    </resultMap>
+    <select id="getDeptAndEmpById" resultMap="MyDept_1">
+        select d.id did, d.dept_name dept_name, e.id eid, e.last_name last_name, e.email email from mybatis_department d left join mybatis_employee e on d.id = e.d_id where d.id = #{id}
+    </select>
+
+
+    <!-- collection：分段查询 -->
+    <resultMap id="MyDept_2" type="Department">
+        <id column="did" property="id" ></id>
+        <result column="dept_name" property="deptName"></result>
+        <collection property="employeeList"  select="com.wang.mybatis.dao.EmployeeMapper.getEmpByDid"
+                    column="{deptId=did}" fetchType="lazy"></collection>
+    </resultMap>
+    <select id="getDeptAndEmpByIdStep" resultMap="MyDept_2">
+        select d.id did, d.dept_name dept_name from mybatis_department d  where d.id = #{id}
+    </select>
+    <!-- 扩展：多列的值传递过去：
+			将多列的值封装map传递；
+			column="{key1=column1,key2=column2}"
+		fetchType="lazy"：表示使用延迟加载；
+				- lazy：延迟
+				- eager：立即
+	 -->
+
+</mapper>
