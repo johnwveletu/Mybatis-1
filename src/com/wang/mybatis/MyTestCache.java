@@ -1,9 +1,7 @@
 package com.wang.mybatis;
 
-import com.wang.mybatis.beans.Department;
 import com.wang.mybatis.beans.Employee;
 import com.wang.mybatis.dao.EmployeeMapper;
-import com.wang.mybatis.dao.EmployeeMapperDynamicSql;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -13,8 +11,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -119,6 +115,24 @@ public class MyTestCache {
         }
     }
 
+    /**
+     * 测试第三方二级缓存Ehcache
+     */
+    @Test
+    public  void  testEhcache(){
+        SqlSession sqlSession_1 = sqlSessionFactory.openSession();
+        SqlSession sqlSession_2 = sqlSessionFactory.openSession();
+        try{
+            EmployeeMapper employeeMapper_1 = sqlSession_1.getMapper(EmployeeMapper.class);
+            Employee employee_1 = employeeMapper_1.getEmpById(1);
+            sqlSession_1.close();
+            EmployeeMapper employeeMapper_2 = sqlSession_2.getMapper(EmployeeMapper.class);
+            Employee employee_2 = employeeMapper_2.getEmpById(1);
+            System.out.println(employee_1 == employee_2);
+        }finally {
+            sqlSession_2.close();
+        }
+    }
 
 
 

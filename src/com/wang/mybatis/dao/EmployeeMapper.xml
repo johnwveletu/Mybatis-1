@@ -22,7 +22,9 @@
     type=""：指定自定义缓存的全类名；
             实现Cache接口即可；
     -->
-    <cache ></cache>
+    <!--<cache ></cache>-->
+    <!--使用第三方二级缓存-->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
     <!--
     namespace:名称空间;指定为接口的全类名
@@ -109,12 +111,12 @@
     </select>
 
     <!--返回一个map-->
-    <select id="getEmpByIdResultTypeMap" resultType="map" >
+    <select id="getEmpByIdResultTypeMap" resultType="java.util.Map" >
         select * from mybatis_employee where id = #{id}
     </select>
 
     <!--返回一个map的集合-->
-    <select id="getEmpBylastNameLikeAsMap" resultType="map" >
+    <select id="getEmpBylastNameLikeAsMap" resultType="java.util.Map" >
         select * from mybatis_employee where last_name like #{lastName}
     </select>
 

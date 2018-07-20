@@ -4,6 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wang.mybatis.dao.DepartmentMapper">
 
+    <cache-ref namespace="com.wang.mybatis.dao.EmployeeMapper" ></cache-ref>
+
     <select id="getDeptById" resultType="Department">
         select * from  mybatis_department where id = #{id}
     </select>
